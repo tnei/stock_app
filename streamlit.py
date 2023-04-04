@@ -75,5 +75,4 @@ st.plotly_chart(fig)
 
 # News Analysis
 st.write(f"### News Analysis")
-url = f"https://newsapi
-
+url = f"https://newsapi.com/articles?source={source}&sortBy={sort_order}&apiKey={api_key}"
