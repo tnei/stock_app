@@ -77,4 +77,4 @@ for article in articles:
     positive_prob = sentiment_data["positive"]
     negative_prob = sentiment_data["negative"]
     neutral_prob = sentiment_data["neutral"]
-    sentiment = max
+    sentiment = max(positive_prob, negative_prob,
