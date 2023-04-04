@@ -2,3 +2,10 @@ streamlit
 pandas
 snowflake-connector-python
 yfinance
+streamlit
+pandas
+plotly
+datetime
+requests
+nltk
+sklearn
