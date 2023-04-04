@@ -1,14 +1,3 @@
-streamlit
-pandas
-snowflake-connector-python
-yfinance
-streamlit
-pandas
-plotly
-datetime
-requests
-nltk
-sklearn
 streamlit==0.86.0
 yfinance==0.1.63
 pandas==1.3.3
