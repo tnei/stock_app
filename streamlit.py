@@ -30,7 +30,7 @@ portfolio_tickers = st.sidebar.text_input("Enter Portfolio Ticker Symbols (comma
 portfolio_list = portfolio_tickers.split(",")
 
 # User input for news API key
-news_api_key = st.secrets["news_api_key"]
+# news_api_key = st.secrets["news_api_key"]
 
 # Downloading stock data for given ticker and time range
 data = yf.download(ticker, start_date, end_date)
