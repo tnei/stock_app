@@ -16,6 +16,22 @@ ticker = st.sidebar.text_input("Enter Ticker Symbol", "AAPL")
 start_date = st.sidebar.date_input("Start Date", value=pd.to_datetime("2020-01-01"))
 end_date = st.sidebar.date_input("End Date", value=dt.datetime.today())
 
+# User input for technical indicator window sizes
+sma20_window = st.sidebar.slider("SMA20 Window Size", 5, 200, 20, 5)
+sma50_window = st.sidebar.slider("SMA50 Window Size", 5, 200, 50, 5)
+
+# User input for benchmark symbol
+benchmark = st.sidebar.text_input("Enter Benchmark Ticker Symbol", "^GSPC")
+
+# User input for portfolio and allocation
+portfolio_allocation = st.sidebar.text_input("Enter Portfolio Allocation (comma-separated list of percentages)", "50,50")
+portfolio_allocation_list = [float(x.strip())/100 for x in portfolio_allocation.split(",")]
+portfolio_tickers = st.sidebar.text_input("Enter Portfolio Ticker Symbols (comma-separated list)", "AAPL,GOOG")
+portfolio_list = portfolio_tickers.split(",")
+
+# User input for news API key
+news_api_key = st.secrets["news_api_key"]
+
 # Downloading stock data for given ticker and time range
 data = yf.download(ticker, start_date, end_date)
 
@@ -26,8 +42,8 @@ fig.add_trace(go.Scatter(x=data.index, y=data["Adj Close"], name="Adj Close"))
 fig.update_layout(xaxis_rangeslider_visible=True)
 
 # Technical Indicators
-sma20 = data["Adj Close"].rolling(window=20).mean()
-sma50 = data["Adj Close"].rolling(window=50).mean()
+sma20 = data["Adj Close"].rolling(window=sma20_window).mean()
+sma50 = data["Adj Close"].rolling(window=sma50_window).mean()
 fig.add_trace(go.Scatter(x=data.index, y=sma20, name="SMA20"))
 fig.add_trace(go.Scatter(x=data.index, y=sma50, name="SMA50"))
 st.plotly_chart(fig)
@@ -37,7 +53,6 @@ st.write(f"### Historical Stock Data for {ticker}")
 st.write(data)
 
 # Comparing with benchmark
-benchmark = "^GSPC"  # S&P 500
 benchmark_data = yf.download(benchmark, start_date, end_date)
 fig = go.Figure()
 fig.add_trace(go.Scatter(x=data.index, y=data["Adj Close"], name=ticker))
@@ -48,13 +63,11 @@ st.plotly_chart(fig)
 
 # Portfolio Management
 st.write(f"### Portfolio Management")
-portfolio = st.text_input("Enter Portfolio (comma-separated list of ticker symbols)", "AAPL,GOOG")
-portfolio_list = portfolio.split(",")
 portfolio_data = pd.DataFrame()
 for stock in portfolio_list:
     stock_data = yf.download(stock, start_date, end_date)
     portfolio_data[stock] = stock_data["Adj Close"]
-portfolio_returns = portfolio_data.pct_change().dropna().sum(axis=1)
+portfolio_returns = portfolio_data.pct_change().dropna().dot(portfolio_allocation_list)
 portfolio_value = (portfolio_returns + 1).cumprod()
 fig = go.Figure()
 fig.add_trace(go.Scatter(x=portfolio_value.index, y=portfolio_value, name="Portfolio Value"))
@@ -62,19 +75,5 @@ st.plotly_chart(fig)
 
 # News Analysis
 st.write(f"### News Analysis")
-url = f"https://newsapi.org/v2/everything?q={ticker}&apiKey=<API_KEY>"
-response = requests.get(url)
-news_data = response.json()
-articles = news_data["articles"]
-sentiments = []
-for article in articles:
-    title = article["title"]
-    description = article["description"]
-    text = f"{title} {description}"
-    sentiment_url = f"https://api.uclassify.com/v1/uclassify/sentiment/v1.1/classify?readKey=<READ_KEY>&text={text}"
-    sentiment_response = requests.get(sentiment_url)
-    sentiment_data = sentiment_response.json()
-    positive_prob = sentiment_data["positive"]
-    negative_prob = sentiment_data["negative"]
-    neutral_prob = sentiment_data["neutral"]
-    sentiment = max(positive_prob, negative_prob,)
+url = f"https://newsapi
+
